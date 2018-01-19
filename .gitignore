@@ -1,0 +1,11 @@
+.history/
+.vscode/
+
+WWW/
+
+Client/node_modules/
+
+DataCreator/dist/
+DataCreator/node_modules/
+
+Doc/

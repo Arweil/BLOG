@@ -34,8 +34,9 @@
       })
     },
     methods: {
-      getArticle ({ title }) {
-        this.$store.dispatch('getSingleArticleByTitle', { title })
+      getArticle ({ id }) {
+        console.log(id)
+        this.$store.dispatch('getSingleArticleById', { id })
       },
       goToTags (tag) {
         this.$router.push({ name: 'Tags', query: { tag } })
@@ -45,7 +46,7 @@
       this.$store.dispatch('clearArticle')
     },
     mounted () {
-      this.getArticle({ title: this.$route.query.title })
+      this.getArticle({ id: this.$route.query.id })
 
       let clientId = ''
       let clientSecret = ''

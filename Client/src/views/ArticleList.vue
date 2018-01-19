@@ -1,6 +1,6 @@
 <template>
   <ul class="list-unstyled">
-    <li v-for="item in articleList" v-bind:key="item.id" v-on:click="goToArticle(item.title)">
+    <li v-for="item in articleList" v-bind:key="item.id" v-on:click="goToArticle(item.id)">
       <h2 class="title">{{item.title}}</h2>
       <i class="iconfont icon-calendar time">{{item.time}}</i>
       <div class="desc">
@@ -29,10 +29,10 @@
     },
     methods: {
       getArticleList () {
-        this.$store.dispatch('getArticleList')
+        this.$store.dispatch('getArticleList', { pageIndex: 1 })
       },
-      goToArticle (title) {
-        this.$router.push({ name: 'Article', query: { title } })
+      goToArticle (id) {
+        this.$router.push({ name: 'Article', query: { id } })
       },
       goToTags (tag) {
         this.$router.push({ name: 'Tags', query: { tag } })

@@ -5,7 +5,7 @@
       <h3 class="year">{{ item.year }}</h3>
       <ul>
         <li class="art-item" v-for="info in item.data">
-          <router-link :to="{ name: 'Article', query: { title: info.title }}" class="title">{{info.title}}</router-link>
+          <router-link :to="{ name: 'Article', query: { id: info.id }}" class="title">{{info.title}}</router-link>
           <div class="time">{{info.time}}</div>
         </li>
       </ul>

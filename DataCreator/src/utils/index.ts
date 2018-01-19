@@ -4,12 +4,12 @@ import * as fs from 'fs';
 import * as fsExtra from 'fs-extra';
 
 export function getCategorysByDoc (): Array<string> {
-  const files = fs.readdirSync(config.BasePath);
+  const files = fs.readdirSync(config.DocPath);
 
   let folders: Array<string> = [];
 
   files.forEach((item) => {
-    const stat = fs.lstatSync(path.join(config.BasePath, `${item}`));
+    const stat = fs.lstatSync(path.join(config.DocPath, `${item}`));
     if (stat.isDirectory()) {
       folders.push(item);
     }
@@ -38,10 +38,25 @@ export function getTags (category: string): Promise<string[]> {
   });
 }
 
+export function getTitles(category: string): Promise<Array<string>> {
+  const pathCategory = path.join(config.DocPath, `${category}`);
+  const files = fs.readdirSync(pathCategory);
+  const titles = [];
+  for (let i = 0, len = files.length; i < len; i++) {
+    const curTitle = files[i];
+    const curTitlePath = path.join(pathCategory, curTitle);
+    const stat = fs.lstatSync(curTitlePath);
+    if (stat.isDirectory() && fsExtra.pathExistsSync(path.join(curTitlePath, `index.md`))) {
+      titles.push(curTitle);
+    }
+  }
+  return Promise.resolve(titles);
+}
+
 /**
  * 获取目录下的所有文章，并按照时间降序排列
  */
-export function getTitlesOrderByTime(category: string): Promise<Array<object>> {
+export function getDescOrderByTime(category: string): Promise<Array<object>> {
   const pathCategory = path.join(config.BasePath, `${category}`);
   const files = fs.readdirSync(pathCategory);
 
@@ -76,6 +91,7 @@ export function getTitlesOrderByTime(category: string): Promise<Array<object>> {
 
 export const config = {
   BasePath: path.join(__dirname, '../../../WWW/doc'),
+  DocPath: path.join(__dirname, '../../../Doc'),
   PageSize: 15
 };
 

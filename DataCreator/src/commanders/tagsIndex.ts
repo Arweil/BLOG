@@ -3,7 +3,7 @@ import * as inquirer from 'inquirer';
 import * as fsExtra from 'fs-extra';
 import { TypeBlog } from '../types/index';
 
-import { getCategory, getTitlesOrderByTime, config } from '../utils/index';
+import { getCategory, getDescOrderByTime, config } from '../utils/index';
 
 let category = '';
 
@@ -45,7 +45,7 @@ export default function tagsIndex () {
     .then(getCategory)
     .then(function (answers: inquirer.Answers) {
       category = answers.category;
-      return getTitlesOrderByTime(answers.category);
+      return getDescOrderByTime(answers.category);
     })
     .then(makeTagsIndex)
     .then(writeIntoFile);

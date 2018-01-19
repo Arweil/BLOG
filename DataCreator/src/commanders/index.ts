@@ -1,5 +1,5 @@
 import init from './init';
-import { add, testAdd } from './add';
+import { add, edit, testAdd } from './add';
 import { remove, testRemove } from './remove';
 import directory from './directory';
 import artlist from './artlist';
@@ -11,6 +11,7 @@ import tagsRemove from './tagsRemove';
 export {
   init,
   add,
+  edit,
   remove,
   directory,
   artlist,

@@ -4,8 +4,8 @@ export const getBaseDataError = 'getBaseDataError'
 export const getArticleListSuccess = 'getArticleListSuccess'
 export const getArticleListError = 'getArticleListError'
 
-export const getArticleByTitleSuccess = 'getArticleByTitleSuccess'
-export const getArticleByTitleError = 'getArticleByTitleError'
+export const getArticleByIdSuccess = 'getArticleByIdSuccess'
+export const getArticleByIdError = 'getArticleByIdError'
 
 export const getArticlesByTagSuccess = 'getArticlesByTagSuccess'
 export const getArticlesByTagError = 'getArticlesByTagError'

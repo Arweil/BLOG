@@ -21,17 +21,17 @@ export default {
     }
   },
   actions: {
-    getArticleList ({ commit }) {
-      APIArticle.getArticleList().then((data) => {
+    getArticleList ({ commit }, { pageIndex }) {
+      APIArticle.getArticleList({ pageIndex }).then((data) => {
         const articleList = data.data
         commit(types.getArticleListSuccess, articleList)
       }, () => {
         commit(types.getArticleListError)
       })
     },
-    getSingleArticleByTitle ({ commit }, { title }) {
-      if (!title) {
-        commit(types.getArticleByTitleError)
+    getSingleArticleById ({ commit }, { id }) {
+      if (!id) {
+        commit(types.getArticleByIdError)
         return
       }
 
@@ -44,13 +44,12 @@ export default {
         mdContent: ''
       }
 
-      APIArticle.getSingleArt({ title })
+      APIArticle.getSingleArt({ id })
       .then((data) => {
         curArticle.mdContent = data.data
-        console.log(curArticle)
       })
       .then(() => {
-        return APIArticle.getSingleArtDesc({ title })
+        return APIArticle.getSingleArtDesc({ id })
       })
       .then((data) => {
         data = data.data
@@ -60,9 +59,9 @@ export default {
         curArticle.time = data.time.split('T')[0]
         curArticle.tags = data.tags
 
-        commit(types.getArticleByTitleSuccess, curArticle)
+        commit(types.getArticleByIdSuccess, curArticle)
       }, () => {
-        commit(types.getArticleByTitleError)
+        commit(types.getArticleByIdError)
       })
     },
     getArticlesByTags ({ commit }, { tag }) {
@@ -86,10 +85,10 @@ export default {
     },
     [types.getArticleListError] (state) {
     },
-    [types.getArticleByTitleSuccess] (state, curArt) {
+    [types.getArticleByIdSuccess] (state, curArt) {
       state.curArticle = curArt
     },
-    [types.getArticleByTitleError] (state) {
+    [types.getArticleByIdError] (state) {
     },
     [types.getArticlesByTagSuccess] (state, arts) {
       state.artsTag = []

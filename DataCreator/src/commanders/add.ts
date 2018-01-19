@@ -3,16 +3,20 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as fsExtra from 'fs-extra';
 
-import { getCategory, getTags, config, trim } from '../utils/index';
+import { getCategory, getTags, getTitles, config, trim } from '../utils/index';
 import { TypeBlog } from '../types/index';
 
 inquirer.registerPrompt('datetime', require('inquirer-datepicker-prompt'));
 
 type CategoryAndTags = {
   category: string,
+  titleList?: string[],
   tagsList: string[]
 };
 
+/**
+ * 通过分类获取标签
+ */
 function getTagsByAnswers(answers: TypeBlog): Promise<CategoryAndTags> {
   return getTags(answers.category).then((tagsList) => {
     return Promise.resolve({
@@ -22,18 +26,39 @@ function getTagsByAnswers(answers: TypeBlog): Promise<CategoryAndTags> {
   });
 }
 
+/**
+ * 通过分类获取标题
+ */
+function getTitleList(data: CategoryAndTags): Promise<CategoryAndTags> {
+  return getTitles(data.category).then((titleList) => {
+    return Promise.resolve(Object.assign(data, { titleList: titleList }));
+  });
+}
+
+/**
+ * 选择标题
+ */
+function choiceTitle (data: CategoryAndTags): Promise<inquirer.Answers> {
+  return inquirer.prompt([{
+    type: 'list',
+    name: 'title',
+    message: '请选择标题: ',
+    choices: [...data.titleList]
+  }]).then((answers: TypeBlog) => {
+    answers.category = data.category;
+    return Promise.resolve(answers);
+  });
+}
+
+/**
+ * 用户选择输入
+ */
 function makePrompt(data: CategoryAndTags): Promise<inquirer.Answers> {
   return inquirer.prompt([{
-    type: 'input',
+    type: 'list',
     name: 'title',
-    message: '请输入标题: ',
-    validate: (title) => {
-      if (trim(title)) {
-        return true;
-      } else {
-        throw new Error('标题不能为空');
-      }
-    }
+    message: '请选择标题: ',
+    choices: [...data.titleList]
   }, {
     type: 'input',
     name: 'desc',
@@ -55,8 +80,41 @@ function makePrompt(data: CategoryAndTags): Promise<inquirer.Answers> {
   });
 }
 
+/**
+ * copy 文件从 Doc 到 WWW/doc
+ */
+function copyFile(answers: TypeBlog) {
+  const makePath = path.join;
+  const id = new Date().getTime().toString(16);
+  answers.id = id;
+  const pathDoc = makePath(config.DocPath, `${answers.category}/${answers.title}`);
+  const pathBase = makePath(config.BasePath, `${answers.category}/${id}`);
+
+  function copyImage() {
+    return fsExtra.pathExists(makePath(pathDoc, `image`))
+      .then((exists) => {
+        if (exists) {
+          return fsExtra.copy(makePath(pathDoc, `image`), makePath(pathBase, `image`));
+        }
+        return Promise.resolve();
+      });
+  }
+
+  function copyArt() {
+    return fsExtra.copy(makePath(pathDoc, `index.md`), makePath(pathBase, `index.md`));
+  }
+
+  return Promise.all([copyImage(), copyArt()])
+    .then(() => {
+      return Promise.resolve(answers);
+    });
+}
+
+/**
+ * 获取当前博文图片作为配图
+ */
 function getBlogImg(data: TypeBlog) {
-  const pathImg = path.join(config.BasePath, `${data.category}/${data.title}/images`);
+  const pathImg = path.join(config.BasePath, `${data.category}/${data.id}/images`);
 
   let files: string[] = [];
   if (fsExtra.pathExistsSync(pathImg)) {
@@ -90,8 +148,11 @@ function getBlogImg(data: TypeBlog) {
   });
 }
 
+/**
+ * 创建desc.json文件
+ */
 function addIntoRelationFile(answers: TypeBlog): Promise<void> {
-  const pathDesc = path.join(config.BasePath, `${answers.category}/${answers.title}`);
+  const pathDesc = path.join(config.BasePath, `${answers.category}/${answers.id}`);
   const fileDesc = path.join(pathDesc, 'desc.json');
 
   return fsExtra.pathExists(pathDesc).then((exists: boolean) => {
@@ -100,7 +161,7 @@ function addIntoRelationFile(answers: TypeBlog): Promise<void> {
     }
 
     return fsExtra.writeJson(fileDesc, {
-      id: new Date().getTime().toString(16),
+      id: answers.id,
       title: answers.title,
       desc: answers.desc,
       descImg: answers.descImg,
@@ -118,9 +179,19 @@ export function add () {
   return Promise.resolve()
     .then(getCategory)
     .then(getTagsByAnswers)
+    .then(getTitleList)
     .then(makePrompt)
+    .then(copyFile)
     .then(getBlogImg)
     .then(addIntoRelationFile);
+}
+
+export function edit () {
+  return Promise.resolve()
+    .then(getCategory)
+    .then(getTitleList)
+    .then(choiceTitle)
+    .then(copyFile);
 }
 
 export function testAdd (answers: TypeBlog) {

@@ -11,6 +11,8 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const PrerenderSpaPlugin = require('prerender-spa-plugin')
+const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
+const WebpackPwaManifest = require('webpack-pwa-manifest')
 
 const env = require('../config/prod.env')
 
@@ -121,7 +123,28 @@ const webpackConfig = merge(baseWebpackConfig, {
       path.resolve(__dirname, '../../WWW'),
       ['/work', '/work/article', '/work/tags', '/life'],
       {}
-    )
+    ),
+    new SWPrecacheWebpackPlugin({
+      filename: 'sw-milk-blog.js',
+      minify: false,
+      cacheId: 'sw-milk-blog-cache',
+      staticFileGlobsIgnorePatterns: [/\.map$/]
+    }),
+    new WebpackPwaManifest({
+      name: `Milk's blog`,
+      short_name: `Milk's blog`,
+      fingerprints: false,
+      lang: 'cn',
+      description: `记录工作与生活`,
+      display: `standalone`,
+      background_color: `#fff`,
+      icons: [{
+        src: path.resolve(__dirname, '../static/Milk.png'),
+        sizes: [192, 144, 96, 72, 48, 36]
+      }],
+      orientation: `portrait`,
+      start_url: '/'
+    })
   ]
 })
 

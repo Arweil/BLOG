@@ -21,15 +21,15 @@ export default {
     }
   },
   actions: {
-    getArticleList ({ commit }, { pageIndex }) {
-      APIArticle.getArticleList({ pageIndex }).then((data) => {
+    getArticleList ({ rootState, commit }, { pageIndex }) {
+      APIArticle.getArticleList({ category: rootState.category, pageIndex }).then((data) => {
         const articleList = data.data
-        commit(types.getArticleListSuccess, articleList)
+        commit(types.getArticleListSuccess, { pageIndex, articleList })
       }, () => {
         commit(types.getArticleListError)
       })
     },
-    getSingleArticleById ({ commit }, { id }) {
+    getSingleArticleById ({ rootState, commit }, { id }) {
       if (!id) {
         commit(types.getArticleByIdError)
         return
@@ -44,12 +44,12 @@ export default {
         mdContent: ''
       }
 
-      APIArticle.getSingleArt({ id })
+      APIArticle.getSingleArt({ category: rootState.category, id })
       .then((data) => {
         curArticle.mdContent = data.data
       })
       .then(() => {
-        return APIArticle.getSingleArtDesc({ id })
+        return APIArticle.getSingleArtDesc({ category: rootState.category, id })
       })
       .then((data) => {
         data = data.data
@@ -64,8 +64,8 @@ export default {
         commit(types.getArticleByIdError)
       })
     },
-    getArticlesByTags ({ commit }, { tag }) {
-      APIArticle.getTagsIndex().then((data) => {
+    getArticlesByTags ({ rootState, commit }, { tag }) {
+      APIArticle.getTagsIndex({ category: rootState.category }).then((data) => {
         const arts = data.data[tag]
         commit(types.getArticlesByTagSuccess, arts)
       }, () => {
@@ -77,11 +77,15 @@ export default {
     }
   },
   mutations: {
-    [types.getArticleListSuccess] (state, articleList) {
+    [types.getArticleListSuccess] (state, { pageIndex, articleList }) {
       articleList.forEach((item) => {
         item.time = item.time.split('T')[0]
       })
-      state.articleList = state.articleList.concat(articleList)
+      if (pageIndex === 1) {
+        state.articleList = articleList
+      } else {
+        state.articleList = state.articleList.concat(articleList)
+      }
     },
     [types.getArticleListError] (state) {
     },

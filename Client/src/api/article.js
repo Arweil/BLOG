@@ -1,25 +1,25 @@
 import axios from 'axios'
 
 export default {
-  getArticleList ({ pageIndex }) {
-    return axios.get(`/doc/work/p-${pageIndex}.json`)
+  getArticleList ({ category, pageIndex }) {
+    return axios.get(`/doc/${category}/p-${pageIndex}.json`)
   },
-  getSingleArt ({ id }) {
+  getSingleArt ({ category, id }) {
     return axios({
       method: 'get',
-      url: `/doc/work/${id}/index.md`
+      url: `/doc/${category}/${id}/index.md`
     })
   },
-  getSingleArtDesc ({ id }) {
+  getSingleArtDesc ({ category, id }) {
     return axios({
       method: 'get',
-      url: `/doc/work/${id}/desc.json`
+      url: `/doc/${category}/${id}/desc.json`
     })
   },
-  getTagsIndex () {
+  getTagsIndex ({ category }) {
     return axios({
       methods: 'get',
-      url: `/doc/work/tagsIndex.json`
+      url: `/doc/${category}/tagsIndex.json`
     })
   }
 }

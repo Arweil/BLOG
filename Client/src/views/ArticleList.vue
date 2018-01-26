@@ -36,12 +36,17 @@
       },
       goToTags (tag) {
         this.$router.push({ name: 'Tags', query: { tag } })
+      },
+      init (category = this.$route.params.category) {
+        return this.$store.dispatch('changeCategory', { category })
+          .then(this.getArticleList)
       }
     },
     mounted () {
-      if (this.articleList.length === 0) {
-        this.getArticleList()
-      }
+      this.init()
+    },
+    beforeRouteUpdate (to, from, next) {
+      this.init(to.params.category).then(next)
     }
   }
 </script>

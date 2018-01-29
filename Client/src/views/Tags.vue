@@ -5,7 +5,7 @@
       <h3 class="year">{{ item.year }}</h3>
       <ul>
         <li class="art-item" v-for="info in item.data">
-          <router-link :to="{ name: 'Article', query: { id: info.id }}" class="title">{{info.title}}</router-link>
+          <router-link :to="{ name: 'Article', query: { id: info.id }}" class="title txt-overflow">{{info.title}}</router-link>
           <div class="time">{{info.time}}</div>
         </li>
       </ul>
@@ -35,6 +35,28 @@
   @media (max-width: 991px) {
     .tags {
       margin: 70px 0 20px !important;
+    }
+  }
+
+  @media (max-width: 375px) {
+    .txt-overflow {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      -webkit-line-clamp: 1;
+      word-break: break-all;
+      -webkit-box-orient: vertical;
+      display: -webkit-box;
+      box-sizing: border-box;
+    }
+
+    .title {
+      max-width: 210px;
+    }
+  }
+
+  @media (max-width: 320px) {
+    .title {
+      max-width: 160px;
     }
   }
 
@@ -71,6 +93,7 @@
     .title {
       color: #5d686f;
       letter-spacing: 1px;
+      height: 26px;
     }
     .time {
       color: #9eabb3;

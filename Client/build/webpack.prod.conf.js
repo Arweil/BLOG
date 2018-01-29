@@ -121,7 +121,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     ]),
     new PrerenderSpaPlugin(
       path.resolve(__dirname, '../../WWW'),
-      ['/work', '/work/article', '/work/tags', '/life'],
+      ['/work', '/work/article', '/work/tags', '/life', '/life/article', '/life/tags'],
       {}
     ),
     new SWPrecacheWebpackPlugin({

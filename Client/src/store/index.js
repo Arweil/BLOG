@@ -48,6 +48,7 @@ export default new Vuex.Store({
       console.log('getBaseDataError')
     },
     changeCategory (state, category) {
+      console.log(category)
       state.category = category
     }
   },

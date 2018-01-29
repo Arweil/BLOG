@@ -23,8 +23,8 @@
         </router-link>
       </div>
       <div class="mine-footer">
-        <a class="iconfont icon-git" v-bind:href="git" target="_blank"></a>
-        <a class="iconfont icon-sina" v-bind:href="sina" target="_blank"></a>
+        <a name="git" class="iconfont icon-git" v-bind:href="git" target="_blank"></a>
+        <a name="sina" class="iconfont icon-sina" v-bind:href="sina" target="_blank"></a>
       </div>
     </div>
   </div>

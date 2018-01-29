@@ -22,11 +22,12 @@ export default {
   },
   actions: {
     getArticleList ({ rootState, commit }, { pageIndex }) {
-      APIArticle.getArticleList({ category: rootState.category, pageIndex }).then((data) => {
+      return APIArticle.getArticleList({ category: rootState.category, pageIndex }).then((data) => {
         const articleList = data.data
         commit(types.getArticleListSuccess, { pageIndex, articleList })
       }, () => {
         commit(types.getArticleListError)
+        return Promise.reject(new Error())
       })
     },
     getSingleArticleById ({ rootState, commit }, { id }) {
@@ -99,7 +100,9 @@ export default {
       const arrYear = Object.keys(arts).sort().reverse()
       arrYear.forEach((year) => {
         arts[year].forEach((item) => {
-          item['time'] = item['time'].split('T')[0]
+          let date = item['time'].split('T')[0]
+          let arrDate = date.split('-')
+          item['time'] = `${arrDate[1]}-${arrDate[2]}`
         })
         state.artsTag.push({
           year,

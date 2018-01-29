@@ -1,5 +1,7 @@
 <template>
-  <ul class="list-unstyled">
+  <ul class="list-unstyled" v-infinite-scroll="loadMore"
+    infinite-scroll-disabled="loading"
+    infinite-scroll-distance="150">
     <li v-for="item in articleList" v-bind:key="item.id" v-on:click="goToArticle(item.id)">
       <h2 class="title">{{item.title}}</h2>
       <i class="iconfont icon-calendar time">{{item.time}}</i>
@@ -22,6 +24,12 @@
   import { mapState } from 'vuex'
   export default {
     name: 'blog-articleList',
+    data () {
+      return {
+        loading: true,
+        pageIndex: 1
+      }
+    },
     computed: {
       ...mapState({
         articleList: state => state.article.articleList
@@ -29,7 +37,10 @@
     },
     methods: {
       getArticleList () {
-        this.$store.dispatch('getArticleList', { pageIndex: 1 })
+        this.$store.dispatch('getArticleList', { pageIndex: this.pageIndex })
+          .then(() => {
+            this.loading = false
+          })
       },
       goToArticle (id) {
         this.$router.push({ name: 'Article', query: { id } })
@@ -37,16 +48,23 @@
       goToTags (tag) {
         this.$router.push({ name: 'Tags', query: { tag } })
       },
-      init (category = this.$route.params.category) {
-        return this.$store.dispatch('changeCategory', { category })
-          .then(this.getArticleList)
+      loadMore () {
+        this.loading = true
+        this.$store.dispatch('getArticleList', { pageIndex: this.pageIndex + 1 })
+          .then(() => {
+            this.pageIndex++
+            this.loading = false
+          }, () => {
+            this.loading = true
+          })
       }
     },
     mounted () {
-      this.init()
+      this.getArticleList()
     },
     beforeRouteUpdate (to, from, next) {
-      this.init(to.params.category).then(next)
+      this.getArticleList()
+      next()
     }
   }
 </script>

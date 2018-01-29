@@ -35,7 +35,6 @@
     },
     methods: {
       getArticle ({ id }) {
-        console.log(id)
         this.$store.dispatch('getSingleArticleById', { id })
       },
       goToTags (tag) {
